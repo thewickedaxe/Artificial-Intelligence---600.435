@@ -52,6 +52,7 @@ class GoWestAgent(Agent):
         else:
             return Directions.STOP
 
+
 #######################################################
 # This portion is written for you, but will only work #
 #       after you fill in parts of search.py          #
@@ -93,7 +94,7 @@ class SearchAgent(Agent):
                 heur = getattr(search, heuristic)
             else:
                 raise AttributeError, heuristic + \
-                    ' is not a function in searchAgents.py or search.py.'
+                                      ' is not a function in searchAgents.py or search.py.'
             print('[SearchAgent] using function %s and heuristic %s' %
                   (fn, heuristic))
             # Note: this bit of Python trickery combines the search algorithm
@@ -285,6 +286,7 @@ def euclideanHeuristic(position, problem, info={}):
     xy2 = problem.goal
     return ((xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2) ** 0.5
 
+
 #####################################################
 # This portion is incomplete.  Time to write code!  #
 #####################################################
@@ -319,6 +321,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -500,7 +503,7 @@ class ClosestDotSearchAgent(SearchAgent):
     def registerInitialState(self, state):
         self.actions = []
         currentState = state
-        while(currentState.getFood().count() > 0):
+        while (currentState.getFood().count() > 0):
             nextPathSegment = self.findPathToClosestDot(
                 currentState)  # The missing piece
             self.actions += nextPathSegment

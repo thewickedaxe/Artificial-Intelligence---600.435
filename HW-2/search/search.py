@@ -94,7 +94,6 @@ def do_dfs(problem, state, answer):
         dfs_visited.add(state[0])
         answer.append(state[1])
         if problem.isGoalState(state[0]):
-            print "Goal!"
             dfs_ans = answer[1:]
             dfs_global_reached = True
         successors = problem.getSuccessors(state[0])
@@ -102,6 +101,7 @@ def do_dfs(problem, state, answer):
         for successor in successors:
             ans_deep = answer[:]
             do_dfs(problem, successor, ans_deep)
+
 
 def depthFirstSearch(problem):
     """
@@ -140,18 +140,35 @@ def breadthFirstSearch(problem):
         visited.add(cur_node[0])
         cur_path.append(cur_node[1])
         if problem.isGoalState(cur_node[0]):
-            print cur_path
             return cur_path
         else:
             for successor in problem.getSuccessors(cur_node[0]):
                 nodes.append((successor, cur_path))
 
 
-
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    init_state = (problem.getStartState(), "init_state", float("inf"))
+    visited = set()
+    visited.add(init_state[0])
+    nodes = util.PriorityQueue()
+    for im_desc in problem.getSuccessors(init_state[0]):
+        nodes.push((im_desc, []), im_desc[2])
+    while not nodes.isEmpty():
+        cur_node, cur_path_ = nodes.pop()
+        cur_path = cur_path_[:]
+        if cur_node[0] in visited:
+            continue
+        visited.add(cur_node[0])
+        cur_path.append(cur_node[1])
+        if problem.isGoalState(cur_node[0]):
+            return cur_path
+        else:
+            successors = problem.getSuccessors(cur_node[0])
+            for successor in successors:
+                total_cost = successor[2] + cur_node[2]
+                successor_loc, successor_dir, successor_cost = successor
+                nodes.push(((successor_loc, successor_dir, total_cost), cur_path), total_cost)
 
 
 def nullHeuristic(state, problem=None):
@@ -164,8 +181,28 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    """Search the node of least total cost first."""
+    init_state = (problem.getStartState(), "init_state", float("inf"))
+    visited = set()
+    visited.add(init_state[0])
+    nodes = util.PriorityQueue()
+    for im_desc in problem.getSuccessors(init_state[0]):
+        nodes.push((im_desc, []), (im_desc[2] + heuristic(im_desc[0], problem)))
+    while not nodes.isEmpty():
+        cur_node, cur_path_ = nodes.pop()
+        cur_path = cur_path_[:]
+        if cur_node[0] in visited:
+            continue
+        visited.add(cur_node[0])
+        cur_path.append(cur_node[1])
+        if problem.isGoalState(cur_node[0]):
+            return cur_path
+        else:
+            successors = problem.getSuccessors(cur_node[0])
+            for successor in successors:
+                successor_loc, successor_dir, successor_cost = successor
+                total_cost = successor_cost + cur_node[2] + heuristic(successor_loc, problem)
+                nodes.push(((successor_loc, successor_dir, successor_cost + cur_node[2]), cur_path), total_cost)
 
 
 # Abbreviations
