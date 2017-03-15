@@ -74,35 +74,6 @@ def tinyMazeSearch(problem):
     return [s, s, w, s, w, w, s, w]
 
 
-dfs_visited = set()
-dfs_ans = []
-dfs_global_reached = False
-
-
-def do_dfs(problem, state, answer):
-    """
-    Performs a recursive dfs.
-    :param problem:
-    :param state:
-    :param answer: the path to the goal
-    :return: a list of directions to the goal
-    """
-    global dfs_ans, dfs_visited, dfs_global_reached
-    if (state[0] in dfs_visited) or dfs_global_reached:
-        return
-    else:
-        dfs_visited.add(state[0])
-        answer.append(state[1])
-        if problem.isGoalState(state[0]):
-            dfs_ans = answer[1:]
-            dfs_global_reached = True
-        successors = problem.getSuccessors(state[0])
-        successors.reverse()
-        for successor in successors:
-            ans_deep = answer[:]
-            do_dfs(problem, successor, ans_deep)
-
-
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -117,11 +88,28 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    global dfs_ans
-    answer = []
     visited = set()
-    do_dfs(problem, (problem.getStartState(), "crap", 10), answer)
-    return dfs_ans
+    init_state = (problem.getStartState(), "crap", 100, [])
+    visited.add(init_state[0])
+    node_stack = util.Stack()
+    for successor_state in problem.getSuccessors(init_state[0]):
+        node_stack.push((successor_state[0], successor_state[1], successor_state[2], []))
+    while not node_stack.isEmpty():
+        successor = node_stack.pop()
+        if successor[0] in visited:
+            continue
+        else:
+            visited.add(successor[0])
+            if problem.isGoalState(successor[0]):
+                answer = successor[3][:]
+                answer.append(successor[1])
+                print answer
+                return answer
+            else:
+                for subsequent_sucessor in problem.getSuccessors(successor[0]):
+                    apath = successor[3][:]
+                    apath.append(successor[1])
+                    node_stack.push((subsequent_sucessor[0], subsequent_sucessor[1], subsequent_sucessor[2], apath))
 
 
 def breadthFirstSearch(problem):
@@ -168,7 +156,8 @@ def uniformCostSearch(problem):
             for successor in successors:
                 total_cost = successor[2] + cur_node[2]
                 successor_loc, successor_dir, successor_cost = successor
-                nodes.push(((successor_loc, successor_dir, total_cost), cur_path), total_cost)
+                nodes.push(
+                    ((successor_loc, successor_dir, total_cost), cur_path), total_cost)
 
 
 def nullHeuristic(state, problem=None):
@@ -187,7 +176,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     visited.add(init_state[0])
     nodes = util.PriorityQueue()
     for im_desc in problem.getSuccessors(init_state[0]):
-        nodes.push((im_desc, []), (im_desc[2] + heuristic(im_desc[0], problem)))
+        nodes.push((im_desc, []), (im_desc[2] +
+                                   heuristic(im_desc[0], problem)))
     while not nodes.isEmpty():
         cur_node, cur_path_ = nodes.pop()
         cur_path = cur_path_[:]
@@ -201,8 +191,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             successors = problem.getSuccessors(cur_node[0])
             for successor in successors:
                 successor_loc, successor_dir, successor_cost = successor
-                total_cost = successor_cost + cur_node[2] + heuristic(successor_loc, problem)
-                nodes.push(((successor_loc, successor_dir, successor_cost + cur_node[2]), cur_path), total_cost)
+                total_cost = successor_cost + \
+                    cur_node[2] + heuristic(successor_loc, problem)
+                nodes.push(((successor_loc, successor_dir,
+                             successor_cost + cur_node[2]), cur_path), total_cost)
 
 
 # Abbreviations
