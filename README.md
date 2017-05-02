@@ -1,2 +1,1 @@
-# Artificial-Intelligence---600.435
-Code for AI course at Johns Hopkins
+# My Homework Assignments for the course 600.435 Artificial Intelligence
