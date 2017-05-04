@@ -40,6 +40,12 @@ class Instance:
         self._feature_vector = feature_vector
         self._label = label
 
+    def get_label(self):
+        return self._label.label_str
+
+    def get_feature_vector(self):
+        return self._feature_vector.feature_vec
+
 
 # abstract base class for defining predictors
 class Predictor:
