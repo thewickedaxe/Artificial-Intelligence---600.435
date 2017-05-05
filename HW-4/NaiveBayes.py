@@ -11,6 +11,19 @@ class NaiveBayes(Predictor):
     """
     Class implements the Predictor super class
     """
+    def seperate_data(self,instances):
+        seperated_data= {}
+        for instance in instances:
+            label = instance._label.label_str
+            if label not in self.class_priors:
+                self.class_priors[label] = 0
+                self.likelihoods[label] = {}
+                seperated_data[label] = []
+            seperated_data[label].append(instance)
+            self.class_priors[label] += 1
+            instance_count = instance._feature_vector.feature_vec.keys()
+        return seperated_data,instance_count
+
 
     def __init__(self):
         self.likelihoods = {}
@@ -38,24 +51,13 @@ class NaiveBayes(Predictor):
         return gaussian
 
     def train(self, instances):
-        seperated_data = {}
-        # Data pre-processing
-        for instance in instances:
-            label = instance._label.label_str
-            if label not in self.class_priors:
-                self.class_priors[label] = 0
-                self.likelihoods[label] = {}
-                seperated_data[label] = []
-            seperated_data[label].append(instance)
-            self.class_priors[label] += 1
-            features = instance._feature_vector.feature_vec.keys()
-
+        seperated_data,attributes_length=self.seperate_data(instances)
         for label in self.class_priors:
             self.class_priors[label] = self.class_priors[label] / float(len(instances))
-            for feature in features:
-                mean = self.calc_mean(seperated_data[label], feature)
-                variance = self.calc_variance(seperated_data[label], feature, mean)
-                self.likelihoods[label][feature] = mean, variance
+            for i in attributes_length:
+                mean = self.calc_mean(seperated_data[label], i)
+                variance = self.calc_variance(seperated_data[label], i, mean)
+                self.likelihoods[label][i] = mean, variance
 
     def predict(self, instance):
         posteriors = {}
