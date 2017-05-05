@@ -43,6 +43,9 @@ class Instance:
     def get_label(self):
         return self._label.label_str
 
+    def set_label(self, new_s):
+        self._label.label_str = new_s
+
     def get_feature_vector(self):
         return self._feature_vector.feature_vec
 

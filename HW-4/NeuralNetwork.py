@@ -1,370 +1,130 @@
 from Methods import *
-import random
-from random import random, seed
 import numpy as np
 
 
-class Node:
-    """
-    A class to represent nodes in the network
-    """
-
-    def __init__(self):
-        pass
-
-    inputs = []
-    next_layer = []
-    output = 0
-    derivative = 0
-    error = 0
-    delta = 0
-    learning_rate = 0.5
-
-    @abstractmethod
-    def activation_function(self):
-        """
-        abstract method that the network nodes will have to implement.
-        :return: the value of the activation function applies to the input
-        """
-        self.output = 0
-        self.derivative = 0
-        self.error = 0
-        self.delta = 0
-        self.learning_rate = 0.05
-
-
-class InputLayerNode(Node):
-    """
-    Class represents nodes in the input layer.
-    """
-
-    def __init__(self):
-        Node.__init__(self)
-
-    def init_val(self, value):
-        """
-        Changes the value of the node
-        :param value: the value to assign to the node
-        :return: nothing
-        """
-        self.output = value
-
-    def activation_function(self):
-        """
-        Activation function represents the identity function.
-        :return: the value of the identify
-        """
-        pass
-
-    def propagate(self, index):
-        """
-        Propagates the output value ot the children
-        :return: nothing.
-        """
-        for child in self.next_layer:
-            if len(child.inputs) <= index:
-                child.inputs.append(self.output)
-            else:
-                child.inputs[index] = self.output
-
-    def back_prop(self, index):
-        """
-        no-op for the input nodes
-        :return: nothing
-        """
-        pass
-
-    def update_weight(self):
-        """
-        no-op for the input nodes
-        :return: nothing
-        """
-        pass
-
-
-class HiddenLayerNode(Node):
-    """
-    Class represents nodes in the hidden layer.
-    """
-    weights = []
-    bias = 0
-
-    def __init__(self, num_parents):
-        """
-        Assigns random values to the weights.
-        """
-        Node.__init__(self)
-        self.weights = []
-        self.bias = 0
-        self.inputs = []
-        for i in xrange(0, num_parents):
-            self.weights.append(np.random.randn())
-            #self.weights.append(0.5)
-        self.bias = np.random.randn()
-        #self.bias = 0.5
-
-    def process_inputs(self):
-        """
-        Applies the weight an bias to the input
-        :return: nothing
-        """
-        for i, val in enumerate(self.inputs):
-            self.inputs[i] = self.inputs[i] * self.weights[i]
-
-    def activation_function(self):
-        """
-        Activation function represents the sigmoid sigmoid.
-        :return: nothing
-        """
-        self.process_inputs()
-        self.output = sum(self.inputs) + self.bias
-        self.output = np.power((1 + np.exp(-self.output)), -1)
-        #self.output = max([self.output, 0])
-
-    def propagate(self, index):
-        """
-        Propagates the output value ot the children
-        :return: nothing.
-        """
-        self.activation_function()
-        for child in self.next_layer:
-            if len(child.inputs) <= index:
-                child.inputs.append(self.output)
-            else:
-                child.inputs[index] = self.output
-        self.derivative = self.output * (1.0 - self.output)
-
-    def back_prop(self, index):
-        """
-        Calculates the new weights to be used
-        :return: nothing
-        """
-        self.derivative = self.output * (1.0 - self.output)
-        for child in self.next_layer:
-            self.error += child.delta + child.weights[index]
-        self.delta = self.error * self.derivative
-
-    def update_weight(self):
-        """
-        Updates the new weight and bias
-        :return: nothing
-        """
-        for i, weight in enumerate(self.weights):
-            self.weights[i] = self.weights[i] - (self.delta * self.learning_rate * self.inputs[i])
-            self.bias = self.bias + (self.delta * self.learning_rate)
-
-
-class OutputLayerNode(Node):
-    """
-    Class represents nodes in the output layer.
-    """
-    weights = []
-    bias = 0
-    class_value = 0
-    probability = 0
-
-    def __init__(self, num_parents):
-        """
-        Assigns the number of parents and class value to an output node.
-        :param num_parents: the number of nodes in the previous layer
-        """
-        Node.__init__(self)
-        self.weights = []
-        self.bias = 0
-        self.class_value = 0
-        for i in xrange(0, num_parents):
-            self.weights.append(np.random.randn())
-            #self.weights.append(0.5)
-        self.bias = np.random.randn()
-        #self.bias = 0.5
-        self.probability = 0
-
-    def process_inputs(self):
-        """
-        Applies the weight an bias to the input
-        :return: nothing
-        """
-        for i, val in enumerate(self.inputs):
-            self.inputs[i] = self.inputs[i] * self.weights[i]
-
-    def activation_function(self):
-        """
-        Activation function represents the sigmoid sigmoid.        
-        :return: nothing
-        """
-        self.process_inputs()
-        self.output = sum(self.inputs) + self.bias
-        self.output = np.power((1 + np.exp(-self.output)), -1)
-
-    def propagate(self, index):
-        """
-        Performs the final activation.
-        :return: nothing
-        """
-        self.activation_function()
-
-    def back_prop(self, index):
-        """
-        Calculates the new weights to be used
-        :return: nothing
-        """
-        self.derivative = self.output * (1.0 - self.output)
-        self.error = (self.class_value - self.output)
-        self.delta = self.error * self.derivative
-
-    def update_weight(self):
-        """
-        Updates the new weight and bias
-        :return: nothing
-        """
-        for i, weight in enumerate(self.weights):
-            self.weights[i] = self.weights[i] - (self.delta * self.learning_rate * self.inputs[i])
-            self.bias = self.bias + (self.delta * self.learning_rate)
-
-
 class NeuralNetwork(Predictor):
-    """
-    Neural Network class
-    """
-    input_nodes_count = 0
-    output_nodes_count = 0
-    hidden_nodes_count = 0
-    label_set = []
-    input_layer = []
-    hidden_layer = []
-    hidden_layer_2 = []
-    output_layer = []
+    input_batch = 0
+    input_labels = []
+    num_examples = 0  # training set size
+    nn_input_dim = 2  # input layer dimensionality
+    nn_output_dim = 2  # output layer dimensionality
+
+    # Gradient descent parameters (I picked these by hand)
+    epsilon = 0.01  # learning rate for gradient descent
+    reg_lambda = 0.01  # regularization strength
+    class_labels = []
+    class_label_map = {}
+    model = 0
 
     def __init__(self):
-        """
-        constructor for the network
-        """
-        self.input_nodes_count = 0
-        self.output_nodes_count = 0
-        self.hidden_nodes_count = 0
-        self.label_set = []
-        self.input_layer = []
-        self.hidden_layer = []
-        self.hidden_layer_2 = []
-        self.output_layer = []
+        self.num_examples = 0  # training set size
+        self.nn_input_dim = 2  # input layer dimensionality
+        self.nn_output_dim = 2  # output layer dimensionality
+        self.epsilon = 0.0001  # learning rate for gradient descent
+        self.reg_lambda = 0.01  # regularization strength
+        self.class_labels = []
+        self.class_label_map = {}
+        self.input_batch = 0
+        self.input_labels = []
+        self.model = 0
+        self.input_label_categories = []
 
-    def get_params(self, instances):
-        """
-        Analyzes the input to determine the parameters of the neural network.
-        :param instances: the input data
-        :return: nothing
-        """
-        self.input_nodes_count = len(instances[0].get_feature_vector())
-        for instance in instances:
-            if instance.get_label() not in self.label_set:
-                self.label_set.append(instance.get_label())
-        self.output_nodes_count = len(self.label_set)
-        self.hidden_nodes_count = self.input_nodes_count
+    def calculate_loss(self, model):
+        W1, b1, W2, b2 = model['W1'], model['b1'], model['W2'], model['b2']
+        # Forward propagation to calculate our predictions
+        z1 = self.input_batch.dot(W1) + b1
+        a1 = np.tanh(z1)
+        z2 = a1.dot(W2) + b2
+        exp_scores = np.exp(z2)
+        probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
+        # Calculating the loss
+        corect_logprobs = -np.log(probs[range(self.num_examples), self.input_label_categories])
+        data_loss = np.sum(corect_logprobs)
+        # Add regulatization term to loss (optional)
+        data_loss += self.reg_lambda / 2 * (np.sum(np.square(W1)) + np.sum(np.square(W2)))
+        return 1. / self.num_examples * data_loss
 
-    def make_network(self):
-        """
-        Links the nodes so that they form the network structure.
-        :return: nothing
-        """
-        for k in xrange(0, self.output_nodes_count):
-            output_node = OutputLayerNode(self.hidden_nodes_count)
-            self.output_layer.append(output_node)
-        for j in xrange(0, self.hidden_nodes_count):
-            hidden_node = HiddenLayerNode(self.hidden_nodes_count)
-            hidden_node.next_layer = self.output_layer
-            self.hidden_layer_2.append(hidden_node)
-        for j in xrange(0, self.hidden_nodes_count):
-            hidden_node = HiddenLayerNode(self.input_nodes_count)
-            hidden_node.next_layer = self.hidden_layer_2
-            self.hidden_layer.append(hidden_node)
-        for i in xrange(0, self.input_nodes_count):
-            input_node = InputLayerNode()
-            input_node.next_layer = self.hidden_layer
-            self.input_layer.append(input_node)
+    def build_model(self, nn_hdim, num_passes=10000):
 
-    def predict(self, instance):
-        """
-        Performs Prediction using a trained model.
-        :param instance: The current feature vector to assign a label to
-        :return: The instance with a class label assigned
-        """
-        for i in xrange(0, len(instance.get_feature_vector())):
-            self.input_layer[i].init_val(instance.get_feature_vector()[i])
-        for layer in [self.input_layer, self.hidden_layer, self.hidden_layer_2, self.output_layer]:
-            self.forward_propagate(layer)
-        output_vals = []
-        for out_node in self.output_layer:
-            output_vals.append(out_node.output)
-        print self.softmax(output_vals)
+        # Initialize the parameters to random values. We need to learn these.
+        np.random.seed(1234)
+        W1 = np.random.randn(self.nn_input_dim, nn_hdim) / np.sqrt(self.nn_input_dim)
+        b1 = np.zeros((1, nn_hdim))
+        W2 = np.random.randn(nn_hdim, self.nn_output_dim) / np.sqrt(nn_hdim)
+        b2 = np.zeros((1, self.nn_output_dim))
 
-    @staticmethod
-    def forward_propagate(neurons):
-        """
-        Starts the forward propagation on the neural network.
-        :return: nothing
-        """
-        for i, neuron in enumerate(neurons):
-            neuron.propagate(i)
+        # This is what we return at the end
+        model = {}
 
-    @staticmethod
-    def back_propagate(neurons):
-        """
-        Starts the forward propagation on the neural network.
-        :return: nothing
-        """
-        for i, neuron in enumerate(neurons):
-            neuron.back_prop(i)
+        # Gradient descent. For each batch...
+        for i in xrange(0, num_passes):
 
-    @staticmethod
-    def update_weights(neurons):
-        """
-        Starts the forward propagation on the neural network.
-        :return: nothing
-        """
-        for neuron in neurons:
-            neuron.update_weight()
+            # Forward propagation
+            z1 = self.input_batch.dot(W1) + b1
+            a1 = np.tanh(z1)
+            z2 = a1.dot(W2) + b2
+            exp_scores = np.exp(z2)
+            probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
 
-    def softmax(self, x):
-        """
-        Compute softmax values for each sets of scores in x.
+            # Backpropagation
+            delta3 = probs
+            delta3[range(self.num_examples), self.input_label_categories] -= 1
+            dW2 = (a1.T).dot(delta3)
+            db2 = np.sum(delta3, axis=0, keepdims=True)
+            delta2 = delta3.dot(W2.T) * (1 - np.power(a1, 2))
+            dW1 = np.dot(self.input_batch.T, delta2)
+            db1 = np.sum(delta2, axis=0)
 
-        Rows are scores for each class. 
-        Columns are predictions (samples).
-        """
-        max_x = max(x)
-        for i, val in enumerate(x):
-            x[i] = x[i] - max_x
-        scoreMatExp = np.exp(np.asarray(x))
-        return scoreMatExp / scoreMatExp.sum(0)
+            # Add regularization terms (b1 and b2 don't have regularization terms)
+            dW2 += self.reg_lambda * W2
+            dW1 += self.reg_lambda * W1
+
+            # Gradient descent parameter update
+            W1 += -self.epsilon * dW1
+            b1 += -self.epsilon * db1
+            W2 += -self.epsilon * dW2
+            b2 += -self.epsilon * db2
+
+            # Assign new parameters to the model
+            model = {'W1': W1, 'b1': b1, 'W2': W2, 'b2': b2}
+        print "Training Successful"
+        return model
 
     def train(self, instances):
-        """
-        The method to train the network with
-        :param instances: the instances to train with
-        :return: a trained model
-        """
-        self.get_params(instances)
-        self.make_network()
-        for instance in instances * 100:
-            class_index = self.label_set.index(instance.get_label())
-            for o_iter, out_node in enumerate(self.output_layer):
-                if o_iter == class_index:
-                    out_node.class_value = 1
-                else:
-                    out_node.class_value = 0
+        temp_toto = []
+        for instance in instances:
+            if instance.get_label() not in self.class_labels:
+                self.class_labels.append(instance.get_label())
+                self.class_label_map[len(self.class_labels) - 1] = instance.get_label()
+            self.input_labels.append(instance.get_label())
+            temp = []
             for i in xrange(0, len(instance.get_feature_vector())):
-                self.input_layer[i].init_val(instance.get_feature_vector()[i])
-            for layer in [self.input_layer, self.hidden_layer, self.hidden_layer_2, self.output_layer]:
-                self.forward_propagate(layer)
-            for layer in [self.output_layer, self.hidden_layer_2, self.hidden_layer, self.input_layer]:
-                self.back_propagate(layer)
-            for layer in [self.output_layer, self.hidden_layer_2, self.hidden_layer, self.input_layer]:
-                self.update_weights(layer)
-        for layer in [self.input_layer, self.hidden_layer, self.hidden_layer_2, self.output_layer]:
-            for neuron in layer:
-                print neuron.output
-        out_vals = []
-        for out_node in self.output_layer:
-            out_vals.append(out_node.output)
-        print self.softmax(out_vals)
+                temp.append(instance.get_feature_vector()[i])
+            temp_toto.append(temp)
+            self.nn_input_dim = len(temp)
+            self.nn_output_dim = len(self.class_labels)
+        self.input_batch = np.array(temp_toto)
+        self.num_examples = len(self.input_batch)
+        for label in self.input_labels:
+            for i in xrange(0, len(self.class_label_map)):
+                if label == self.class_label_map[i]:
+                    self.input_label_categories.append(i)
+                    break
+        self.model = self.build_model(20)
 
+    def make_prediction(self, x):
+        W1, b1, W2, b2 = self.model['W1'], self.model['b1'], self.model['W2'], self.model['b2']
+        # Forward propagation
+        z1 = x.dot(W1) + b1
+        a1 = np.tanh(z1)
+        z2 = a1.dot(W2) + b2
+        exp_scores = np.exp(z2)
+        probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
+        # print probs
+        return np.argmax(probs, axis=1)
+
+    def predict(self, instance):
+        temp = []
+        for i in xrange(0, len(instance.get_feature_vector())):
+            temp.append(instance.get_feature_vector()[i])
+        return self.class_label_map[self.make_prediction(np.array(temp))[0]]
