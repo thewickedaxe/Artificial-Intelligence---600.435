@@ -3,7 +3,7 @@ import os
 import pickle
 
 import DecisionTree
-import NaiveBayes
+from NaiveBayes import NaiveBayes
 from NeuralNetwork import NeuralNetwork
 from Methods import ClassificationLabel, FeatureVector, Instance
 
@@ -54,7 +54,7 @@ def get_args():
 
 def predict(predictor, instances):
     for instance in instances:
-        label = predictor.predict(instance)
+        label = predictor.make_predict(instance)
 
         print(str(label))
 
