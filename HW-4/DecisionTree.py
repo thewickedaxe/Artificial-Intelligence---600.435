@@ -9,7 +9,7 @@ import copy
 class DecisionTree(Predictor):
     def __init__(self):
         self.method = 0
-        self.tree = {}
+        self.tfringe = {}
         self.features_mat = []
         self.labels = []
         self.test_mat = []
@@ -154,7 +154,7 @@ class DecisionTree(Predictor):
                 return tree
 
     def make_prediction(self, data):
-        terminal = copy.deepcopy(self.tree)
+        terminal = copy.deepcopy(self.tfringe)
         while isinstance(terminal, dict):
             if len(terminal.keys()) == 1:
                 attr = terminal.keys()[0]
@@ -212,7 +212,7 @@ class DecisionTree(Predictor):
         for i in range(0, x):
             for j in range(1, y):
                 data[i][j] = self.ceiling(float(data[i][j]))
-        self.tree = self.make_vals(data, attrs, {})
+        self.tfringe = self.make_vals(data, attrs, {})
         return self
 
     def marshall_input(self, instances):
@@ -223,7 +223,7 @@ class DecisionTree(Predictor):
             self.test_mat.append(temp)
             self.test_labels.append(i.get_label())
 
-    def predict(self, instances):
+    def predict(self, instances, cindex=0):
         self.marshall_input(instances)
         data = np.asarray(self.test_mat, dtype=np.float64)
         labels = np.asarray(self.test_labels)
