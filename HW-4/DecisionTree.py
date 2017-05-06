@@ -15,29 +15,28 @@ class DecisionTree(Predictor):
         self.test_mat = []
         self.test_labels = []
 
-    def ig_kernel_sum(self, length, summation, temp_count_attribute):
-        for g, h in temp_count_attribute.iteritems():
-            sumValue = sum(h.values())
-            summation += ((sumValue * self.random_val(h)) / length)
-        return summation
+    def ig_kernel_sum(self, veclen, toto, attr):
+        for g, h in attr.iteritems():
+            s_val = sum(h.values())
+            toto += ((s_val * self.random_val(h)) / veclen)
+        return toto
 
-    def ig_kernel(self, dest, set, temp_count_attribute):
-        self.ig_ratio_kernel(dest, set, temp_count_attribute)
+    def ig_kernel(self, dest, set, cur_attr):
+        self.ig_ratio_kernel(dest, set, cur_attr)
         summation = 0
         return summation
 
     def get_ig(self, set, dest, parent):
-        temp_count_attribute = defaultdict(dict)
+        cur_attr = defaultdict(dict)
         length = len(set)
-        summation = self.ig_kernel(dest, set, temp_count_attribute)
-        summation = self.ig_kernel_sum(length, summation, temp_count_attribute)
+        summation = self.ig_kernel(dest, set, cur_attr)
+        summation = self.ig_kernel_sum(length, summation, cur_attr)
         return parent - summation
 
-
     def get_ig_ratio(self, set, dest, parent):
-        temp_count_attribute = defaultdict(dict)
+        cur_attr = defaultdict(dict)
         length = len(set)
-        self.ig_ratio_kernel(dest, set, temp_count_attribute)
+        self.ig_ratio_kernel(dest, set, cur_attr)
         summation = 0
         range_data = np.asarray(set, dtype=float)
         ranged = float(np.max(range_data) - np.min(range_data))
@@ -46,12 +45,13 @@ class DecisionTree(Predictor):
         else:
             return (parent - summation)/1
 
-    def ig_ratio_kernel(self, dest, set, temp_count_attribute):
+    @staticmethod
+    def ig_ratio_kernel(dest, set, cur_attr):
         for i, j in zip(set, dest):
-            if j in temp_count_attribute[i]:
-                temp_count_attribute[i][j] += 1
+            if j in cur_attr[i]:
+                cur_attr[i][j] += 1
             else:
-                temp_count_attribute[i][j] = 1
+                cur_attr[i][j] = 1
 
     def calculate_loss(self, set, attributes, val):
         count = Counter()
@@ -164,13 +164,12 @@ class DecisionTree(Predictor):
                     terminal = terminal[attr][data[attr]]
                 except KeyError:
                     try:
-                        print data[attr]
                         terminal = uni[rand]
                     except KeyError:
                         terminal = uni[rand]
                     continue
             else:
-                print 'incorrect tree format'
+                raise "KeyError"
         return terminal
 
     @staticmethod
@@ -213,14 +212,7 @@ class DecisionTree(Predictor):
         for i in range(0, x):
             for j in range(1, y):
                 data[i][j] = self.ceiling(float(data[i][j]))
-        check = input("\nImplement Pruning? 1 for Yes, 0 for No:\n")
-        check2 = input("\nEnter 0 for IG or 1 for IG ratio:\n")
-        if check2 == 1:
-            self.method = 1
-        if check == 1:
-            self.tree = self.prune(data, attrs, {})
-        else:
-            self.tree = self.make_vals(data, attrs, {})
+        self.tree = self.make_vals(data, attrs, {})
         return self
 
     def marshall_input(self, instances):
@@ -244,8 +236,4 @@ class DecisionTree(Predictor):
         for d in data:
             prediction.append(self.make_prediction(d))
         correct, accuracy, precision, recall = self.precision_calc_tree(prediction, data)
-        print "Correct Predictions:", correct
-        print "Total Predictions: ", len(prediction)
-        print "Precision: ", precision
-        print "Recall: ", recall
-        print "Accuracy: ", accuracy
+        print prediction

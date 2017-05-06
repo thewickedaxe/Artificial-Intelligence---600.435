@@ -19,7 +19,7 @@
       <file leaf-file-name="Methods.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Methods.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="787">
+            <state relative-caret-position="880">
               <caret line="80" column="3" lean-forward="false" selection-start-line="80" selection-start-column="3" selection-end-line="80" selection-end-column="3" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
@@ -28,25 +28,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="classify.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/classify.py">
+      <file leaf-file-name="DecisionTree.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DecisionTree.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-140">
-              <caret line="53" column="0" lean-forward="true" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+            <state relative-caret-position="-2108">
+              <caret line="28" column="40" lean-forward="true" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
               <folding>
-                <element signature="e#0#15#0" expanded="true" />
+                <element signature="e#0#21#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DecisionTree.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/DecisionTree.py">
+      <file leaf-file-name="classify.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/classify.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1680">
-              <caret line="84" column="28" lean-forward="false" selection-start-line="84" selection-start-column="28" selection-end-line="84" selection-end-column="28" />
+            <state relative-caret-position="380">
+              <caret line="52" column="0" lean-forward="true" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
               <folding>
-                <element signature="e#0#21#0" expanded="true" />
+                <element signature="e#0#15#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -73,7 +73,6 @@
       <find>hidden_layer_2</find>
       <find>randn</find>
       <find>np.power((1 + np.exp(-self.output)), -1)</find>
-      <find>print</find>
       <find>from Methods import \*\nimport numpy as np\n\n\nclass NeuralNetwork\(Predictor\)\:\n    input_batch \= 0\n    input_labels \= \[\]\n    num_samples \= 0  \# training set size\n    input_nodes_count \= 2  \# input layer dimensionality\n    output_nodes_count \= 2  \# output layer dimensionality\n\n    \# Gradient descent parameters \(I picked these by hand\)\n    learn_rate \= 0\.01  \# learning rate for gradient descent\n    reg_lambda \= 0\.01  \# regularization strength\n    class_labels \= \[\]\n    class_label_map \= \{\}\n    model \= 0\n\n    def __init__\(self\)\:\n        self\.num_samples \= 0  \# training set size\n        self\.input_nodes_count \= 2  \# input layer dimensionality\n        self\.output_nodes_count \= 2  \# output layer dimensionality\n        self\.learn_rate \= 0\.0001  \# learning rate for gradient descent\n        self\.reg_lambda \= 0\.01  \# regularization strength\n        self\.class_labels \= \[\]\n        self\.class_label_map \= \{\}\n        self\.input_batch \= 0\n        self\.input_labels \= \[\]\n        self\.model \= 0\n        self\.input_label_categories \= \[\]\n\n    def calculate_loss\(self\, model\)\:\n        W1\, b1\, W2\, b2 \= model\[\'W1\'\]\, model\[\'b1\'\]\, model\[\'W2\'\]\, model\[\'b2\'\]\n        \# Forward propagation to calculate our predictions\n        z1 \= self\.input_batch\.dot\(W1\) \+ b1\n        a1 \= np\.tanh\(z1\)\n        z2 \= a1\.dot\(W2\) \+ b2\n        exp_scores \= np\.exp\(z2\)\n        probs \= exp_scores \/ np\.sum\(exp_scores\, axis\=1\, keepdims\=True\)\n        \# Calculating the loss\n        corect_logprobs \= \-np\.log\(probs\[range\(self\.num_samples\)\, self\.input_label_categories\]\)\n        data_loss \= np\.sum\(corect_logprobs\)\n        \# Add regulatization term to loss \(optional\)\n        data_loss \+\= self\.reg_lambda \/ 2 \* \(np\.sum\(np\.square\(W1\)\) \+ np\.sum\(np\.square\(W2\)\)\)\n        return 1\. \/ self\.num_samples \* data_loss\n\n    def build_model\(self\, nn_hdim\, num_passes\=10000\)\:\n\n        \# Initialize the parameters to random values\. We need to learn these\.\n        np\.random\.seed\(1234\)\n        W1 \= np\.random\.randn\(self\.input_nodes_count\, nn_hdim\) \/ np\.sqrt\(self\.input_nodes_count\)\n        b1 \= np\.zeros\(\(1\, nn_hdim\)\)\n        W2 \= np\.random\.randn\(nn_hdim\, self\.output_nodes_count\) \/ np\.sqrt\(nn_hdim\)\n        b2 \= np\.zeros\(\(1\, self\.output_nodes_count\)\)\n\n        \# This is what we return at the end\n        model \= \{\}\n\n        \# Gradient descent\. For each batch\.\.\.\n        for i in xrange\(0\, num_passes\)\:\n\n            \# Forward propagation\n            z1 \= self\.input_batch\.dot\(W1\) \+ b1\n            a1 \= np\.tanh\(z1\)\n            z2 \= a1\.dot\(W2\) \+ b2\n            exp_scores \= np\.exp\(z2\)\n            probs \= exp_scores \/ np\.sum\(exp_scores\, axis\=1\, keepdims\=True\)\n\n            \# Backpropagation\n            delta3 \= probs\n            delta3\[range\(self\.num_samples\)\, self\.input_label_categories\] \-\= 1\n            dW2 \= \(a1\.T\)\.dot\(delta3\)\n            db2 \= np\.sum\(delta3\, axis\=0\, keepdims\=True\)\n            delta2 \= delta3\.dot\(W2\.T\) \* \(1 \- np\.power\(a1\, 2\)\)\n            dW1 \= np\.dot\(self\.input_batch\.T\, delta2\)\n            db1 \= np\.sum\(delta2\, axis\=0\)\n\n            \# Add regularization terms \(b1 and b2 don\'t have regularization terms\)\n            dW2 \+\= self\.reg_lambda \* W2\n            dW1 \+\= self\.reg_lambda \* W1\n\n            \# Gradient descent parameter update\n            W1 \+\= \-self\.learn_rate \* dW1\n            b1 \+\= \-self\.learn_rate \* db1\n            W2 \+\= \-self\.learn_rate \* dW2\n            b2 \+\= \-self\.learn_rate \* db2\n\n            \# Assign new parameters to the model\n            model \= \{\'W1\'\: W1\, \'b1\'\: b1\, \'W2\'\: W2\, \'b2\'\: b2\}\n        print \&quot;Training Successful\&quot;\n        return model\n\n    def train\(self\, instances\)\:\n        temp_toto \= \[\]\n        for instance in instances\:\n            if instance\.get_label\(\) not in self\.class_labels\:\n                self\.class_labels\.append\(instance\.get_label\(\)\)\n                self\.class_label_map\[len\(self\.class_labels\) \- 1\] \= instance\.get_label\(\)\n            self\.input_labels\.append\(instance\.get_label\(\)\)\n            temp \= \[\]\n            for i in xrange\(0\, len\(instance\.get_feature_vector\(\)\)\)\:\n                temp\.append\(instance\.get_feature_vector\(\)\[i\]\)\n            temp_toto\.append\(temp\)\n            self\.input_nodes_count \= len\(temp\)\n            self\.output_nodes_count \= len\(self\.class_labels\)\n        self\.input_batch \= np\.array\(temp_toto\)\n        self\.num_samples \= len\(self\.input_batch\)\n        for label in self\.input_labels\:\n            for i in xrange\(0\, len\(self\.class_label_map\)\)\:\n                if label \=\= self\.class_label_map\[i\]\:\n                    self\.input_label_categories\.append\(i\)\n                    break\n        self\.model \= self\.build_model\(20\)\n\n    def make_prediction\(self\, x\)\:\n        W1\, b1\, W2\, b2 \= self\.model\[\'W1\'\]\, self\.model\[\'b1\'\]\, self\.model\[\'W2\'\]\, self\.model\[\'b2\'\]\n        \# Forward propagation\n        z1 \= x\.dot\(W1\) \+ b1\n        a1 \= np\.tanh\(z1\)\n        z2 \= a1\.dot\(W2\) \+ b2\n        exp_scores \= np\.exp\(z2\)\n        probs \= exp_scores \/ np\.sum\(exp_scores\, axis\=1\, keepdims\=True\)\n        \# print probs\n        return np\.argmax\(probs\, axis\=1\)\n\n    def predict\(self\, instance\)\:\n        temp \= \[\]\n        for i in xrange\(0\, len\(instance\.get_feature_vector\(\)\)\)\:\n            temp\.append\(instance\.get_feature_vector\(\)\[i\]\)\n        return self\.class_label_map\[self\.make_prediction\(np\.array\(temp\)\)\[0\]\]\n</find>
       <find>b2</find>
       <find>_feature_vector.feature_vec</find>
@@ -91,6 +90,9 @@
       <find>getlabel</find>
       <find>getfeature</find>
       <find>get_Attribute</find>
+      <find>print</find>
+      <find>rand</find>
+      <find>temp_count_attribute</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -104,16 +106,17 @@
       <replace>get_label</replace>
       <replace>get_feature_vector</replace>
       <replace>get_feature_vector()</replace>
+      <replace>cur_attr</replace>
     </replaceStrings>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/NaiveBayes.py" />
-        <option value="$PROJECT_DIR$/NeuralNetwork.py" />
-        <option value="$PROJECT_DIR$/classify.py" />
         <option value="$PROJECT_DIR$/Methods.py" />
+        <option value="$PROJECT_DIR$/NeuralNetwork.py" />
         <option value="$PROJECT_DIR$/DecisionTree.py" />
+        <option value="$PROJECT_DIR$/classify.py" />
       </list>
     </option>
   </component>
@@ -406,6 +409,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-11" width="1857" height="1092" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32952183" sideWeight="0.5019326" order="7" side_tool="true" content_ui="tabs" />
@@ -413,7 +417,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24220374" sideWeight="0.49806738" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19547212" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19547212" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32952183" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -606,17 +610,7 @@
         <state relative-caret-position="687">
           <caret line="66" column="41" lean-forward="true" selection-start-line="66" selection-start-column="41" selection-end-line="66" selection-end-column="41" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/NeuralNetwork.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1347">
-          <caret line="110" column="18" lean-forward="false" selection-start-line="110" selection-start-column="18" selection-end-line="110" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -629,19 +623,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/classify.py">
+    <entry file="file://$PROJECT_DIR$/NeuralNetwork.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-140">
-          <caret line="53" column="0" lean-forward="true" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+        <state relative-caret-position="273">
+          <caret line="47" column="65" lean-forward="false" selection-start-line="47" selection-start-column="65" selection-end-line="47" selection-end-column="65" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DecisionTree.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2108">
+          <caret line="28" column="40" lean-forward="true" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Methods.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="787">
+        <state relative-caret-position="880">
           <caret line="80" column="3" lean-forward="false" selection-start-line="80" selection-start-column="3" selection-end-line="80" selection-end-column="3" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
@@ -649,12 +653,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DecisionTree.py">
+    <entry file="file://$PROJECT_DIR$/classify.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1680">
-          <caret line="84" column="28" lean-forward="false" selection-start-line="84" selection-start-column="28" selection-end-line="84" selection-end-column="28" />
+        <state relative-caret-position="380">
+          <caret line="52" column="0" lean-forward="true" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
           <folding>
-            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>

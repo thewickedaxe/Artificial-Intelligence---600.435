@@ -46,7 +46,6 @@ class NeuralNetwork(Predictor):
         print "Training Successful"
 
     def build_model(self, hidden_nodes_count, epoch_count=10000):
-        # Initialize the parameters to random values. We need to learn these.
         np.random.seed(1234)
         hidden_1 = np.random.randn(self.input_nodes_count, hidden_nodes_count) / np.sqrt(self.input_nodes_count)
         hidden_1_bias = np.zeros((1, hidden_nodes_count))

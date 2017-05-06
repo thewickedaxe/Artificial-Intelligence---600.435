@@ -83,12 +83,6 @@ def predict(predictor, instances):
                 recall_correct[instance._label.label_str] += 1
             recall_base[instance._label.label_str] += 1
             #print(str(label))
-        print "Accuracy is", (float(correct_count) / total_count)
-        for i in precision_base:
-            print "precision is ", i, float(precision_correct[i]) / float(precision_base[i])
-        for i in recall_base:
-            print "recall is ", i, float(recall_correct[i]) / float(recall_base[i])
-
 
 def check_args(args):
     if args.mode.lower() == "train":
