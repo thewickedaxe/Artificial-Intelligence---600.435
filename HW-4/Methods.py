@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from collections import Counter, defaultdict
 
 
 # abstract base class for defining labels
@@ -58,7 +59,7 @@ class Predictor:
     def train(self, instances): pass
 
     @abstractmethod
-    def predict(self, instance): pass
+    def predict(self, instance, cur_index=0): pass
 
 
 """

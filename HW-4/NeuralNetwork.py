@@ -18,8 +18,8 @@ class NeuralNetwork(Predictor):
 
     def __init__(self):
         self.num_samples = 0  # training set size
-        self.input_nodes_count = 2  # input layer dimensionality
-        self.output_nodes_count = 2  # output layer dimensionality
+        self.input_nodes_count = 0  # input layer dimensionality
+        self.output_nodes_count = 0  # output layer dimensionality
         self.learn_rate = 0.0001  # learning rate for gradient descent
         self.reg_strength = 0.01  # regularization strength
         self.class_labels = []
@@ -29,15 +29,7 @@ class NeuralNetwork(Predictor):
         self.model = 0
         self.input_label_categories = []
 
-    def build_model(self, hidden_nodes_count, epoch_count=10000):
-
-        # Initialize the parameters to random values. We need to learn these.
-        np.random.seed(1234)
-        hidden_1 = np.random.randn(self.input_nodes_count, hidden_nodes_count) / np.sqrt(self.input_nodes_count)
-        hidden_1_bias = np.zeros((1, hidden_nodes_count))
-        hidden_2 = np.random.randn(hidden_nodes_count, self.output_nodes_count) / np.sqrt(hidden_nodes_count)
-        hidden_2_bias = np.zeros((1, self.output_nodes_count))
-
+    def move_over_epochs(self, epoch_count, hidden_1, hidden_1_bias, hidden_2, hidden_2_bias):
         for i in xrange(0, epoch_count):
             output_1, probs = self.forward_propagate(hidden_1, hidden_1_bias, hidden_2, hidden_2_bias)
 
@@ -49,14 +41,24 @@ class NeuralNetwork(Predictor):
                                                                                  derivative_bias_1, derivative_bias_2,
                                                                                  hidden_1, hidden_1_bias, hidden_2,
                                                                                  hidden_2_bias)
-            self.model = {'weights_1': hidden_1, 'bias_1': hidden_1_bias, 'weights_2': hidden_2, 'bias_2': hidden_2_bias}
+            self.model = {'weights_1': hidden_1, 'bias_1': hidden_1_bias, 'weights_2': hidden_2,
+                          'bias_2': hidden_2_bias}
         print "Training Successful"
 
+    def build_model(self, hidden_nodes_count, epoch_count=10000):
+        # Initialize the parameters to random values. We need to learn these.
+        np.random.seed(1234)
+        hidden_1 = np.random.randn(self.input_nodes_count, hidden_nodes_count) / np.sqrt(self.input_nodes_count)
+        hidden_1_bias = np.zeros((1, hidden_nodes_count))
+        hidden_2 = np.random.randn(hidden_nodes_count, self.output_nodes_count) / np.sqrt(hidden_nodes_count)
+        hidden_2_bias = np.zeros((1, self.output_nodes_count))
+        self.move_over_epochs(epoch_count, hidden_1, hidden_1_bias, hidden_2, hidden_2_bias)
+
     def back_propagate(self, hidden_2, output_1, probs):
-        # back
         error_3 = probs
         error_3[range(self.num_samples), self.input_label_categories] -= 1
-        derivative_1 = (output_1.T).dot(error_3)
+        output_transpose = output_1.T
+        derivative_1 = output_transpose.dot(error_3)
         derivative_bias_1 = np.sum(error_3, axis=0, keepdims=True)
         error2 = error_3.dot(hidden_2.T) * (1 - np.power(output_1, 2))
         derivative_2 = np.dot(self.input_batch.T, error2)
@@ -64,7 +66,6 @@ class NeuralNetwork(Predictor):
         return derivative_1, derivative_2, derivative_bias_1, derivative_bias_2
 
     def forward_propagate(self, hidden_1, hidden_1_bias, hidden_2, hidden_2_bias):
-        # forward
         output_1_pre_sigmoid = self.input_batch.dot(hidden_1) + hidden_1_bias
         output_1 = np.tanh(output_1_pre_sigmoid)
         output_2_pre_softmax = output_1.dot(hidden_2) + hidden_2_bias
@@ -113,7 +114,7 @@ class NeuralNetwork(Predictor):
         probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
         return np.argmax(probs, axis=1)
 
-    def predict(self, instance):
+    def predict(self, instance, cur_index=0):
         temp = []
         for i in xrange(0, len(instance.get_feature_vector())):
             temp.append(instance.get_feature_vector()[i])
